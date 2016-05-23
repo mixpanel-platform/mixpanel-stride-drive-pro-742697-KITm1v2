@@ -7,9 +7,134 @@
     <script src="https://cdn.mxpnl.com/libs/mixpanel-platform/build/mixpanel-platform.v0.latest.min.js"></script>
   </head>
   <body class="mixpanel-platform-body">
-    <h1>Hello, World!</h1>
+    
+    <div class="mixpanel-platform-section">
+      <h1>Weekly Active Users</h1>
+      <div style="clear: both;"></div>
+      <div id="WAU" class="report"></div>
+      <h1>Weekly Activations</h1>
+      <div style="clear: both;"></div>
+      <div id="WeeklyActivations" class="report"></div>
+      <h1>Expense Recorded</h1>
+      <div style="clear: both;"></div>
+      <div id="ExpenseRecorded" class="report"></div>
+      <h1>Income Recorded</h1>
+      <div style="clear: both;"></div>
+      <div id="IncomeRecorded" class="report"></div>
+      <h1>Deduction Reports Sent</h1>
+      <div style="clear: both;"></div>
+      <div id="DeductionReportsSent" class="report"></div>
+      <h1>Bank Account Linked</h1>
+      <div style="clear: both;"></div>
+      <div id="BankAccountLinked" class="report"></div>
+     </div>
+    <style>
+    h1 {
+      font-size: 20px;
+      margin: 10px 0;
+    }
+    .report {
+     margin: 15px 0; 
+    }
+    </style>
     <script>
-      // Run queries and display results here
+      var WAULine  = $('#WAU').MPChart({chartType: 'line'});
+      var WeeklyActivationsLine  = $('#WeeklyActivations').MPChart({chartType: 'line'});
+      var ExpenseRecordedLine  = $('#ExpenseRecorded').MPChart({chartType: 'line'});
+      var IncomeRecordedLine  = $('#IncomeRecorded').MPChart({chartType: 'line'});
+      var DeductionReportsSentLine  = $('#DeductionReportsSent').MPChart({chartType: 'line'});
+      var BankAccountLinkedLine  = $('#BankAccountLinked').MPChart({chartType: 'line'});
+
+      var WAUParams = {
+            from: '2016-01-06',
+            to: moment(),
+            type: 'unique',
+            unit: 'week',
+            where: 'properties["mp_country_code"] == "US"',
+      };
+      
+      var WeeklyActivationsParams = {
+            from: '2015-12-28',
+            to: moment(),
+            type: 'unique',
+            unit: 'week',
+      };
+      
+      var ExpenseRecordedParams = {
+            from: '2016-01-06',
+            to: moment(),
+            type: 'unique',
+            unit: 'week',
+      };
+      
+      var IncomeRecordedParams = {
+            from: moment().subtract('24', 'weeks'),
+            to: moment(),
+            type: 'unique',
+            unit: 'week',
+      };
+      
+      var DeductionReportsSentParams = {
+            from: '2016-03-12',
+            to: moment(),
+            type: 'unique',
+            unit: 'week',
+      };
+      
+      var BankAccountLinkedParams = {
+            from: '2016-04-06',
+            to: moment(),
+            type: 'unique',
+            unit: 'week',
+      };
+      
+      runQuery();
+       function runQuery() {
+        
+        //Weekly Active Users
+        
+        MP.api.segment('View Screen', WAUParams).done(function(results) {
+            
+            WAULine.MPChart('setData', results)
+        });
+        
+         //Weekly Activations
+        
+        MP.api.segment('Location Permission', WeeklyActivationsParams).done(function(results) {
+            
+            WeeklyActivationsLine.MPChart('setData', results);
+        });
+        
+        //Expense Recorded
+        
+        MP.api.segment('Expense added', ExpenseRecordedParams).done(function(results) {
+            
+            ExpenseRecordedLine.MPChart('setData', results);
+        });
+        
+        //Income Recorded
+        
+        MP.api.segment('Income added', IncomeRecordedParams).done(function(results) {
+            
+            IncomeRecordedLine.MPChart('setData', results);
+        });
+        
+        //Deduction Reports Sent
+        
+        MP.api.segment('$custom_event:139167', DeductionReportsSentParams).done(function(results) {
+            
+            DeductionReportsSentLine.MPChart('setData', results);
+        });
+        
+        //Bank Account Linked
+        
+         MP.api.segment('Transactions: Account Linked', BankAccountLinkedParams).done(function(results) {
+            
+            BankAccountLinkedLine.MPChart('setData', results);
+        });
+        
+        }
+
     </script>
   </body>
 </html>
